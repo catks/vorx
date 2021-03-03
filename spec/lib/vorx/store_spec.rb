@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Vorx::Store do
   let(:instance) { described_class.new(store_folder.to_s) }
 
@@ -5,13 +7,12 @@ RSpec.describe Vorx::Store do
   let(:repo_folder) { store_folder.join('myrepo@master') }
   let(:git_repo) { TestRemoteRepository.new('myrepo', base_directory: store_folder) }
   let(:git_reference) { 'http://gitserver/myrepo.git' }
-  let(:git_reference_2) { 'http://gitserver/myrepo2.git' }
+  let(:git_reference2) { 'http://gitserver/myrepo2.git' }
 
   describe '#fetch' do
     def fetch
       instance.fetch(git_reference)
     end
-
 
     after do
       store_folder.rmtree
@@ -107,7 +108,7 @@ RSpec.describe Vorx::Store do
     context 'when multiple repositories is added' do
       before do
         instance.add(git_reference)
-        instance.add(git_reference_2)
+        instance.add(git_reference2)
       end
 
       it 'delete all repositories' do
@@ -117,7 +118,7 @@ RSpec.describe Vorx::Store do
       context 'and cloned' do
         before do
           instance.fetch(git_reference)
-          instance.fetch(git_reference_2)
+          instance.fetch(git_reference2)
         end
 
         after do

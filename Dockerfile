@@ -1,5 +1,5 @@
 ARG RUBY_VERSION
-FROM ruby:${RUBY_VERSION:-2.6.5}-alpine AS builder
+FROM ruby:${RUBY_VERSION:-2.6.6}-alpine AS builder
 
 ENV BUILD_PACKAGES build-base git
 ENV DEV_PACKAGES bash

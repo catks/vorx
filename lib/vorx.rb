@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry-struct'
 require 'git'
 
@@ -11,6 +13,6 @@ module Vorx
   class Error < StandardError; end
 
   def self.root_path
-    Pathname.new File.expand_path(__dir__ + '/..')
+    Pathname.new File.expand_path("#{__dir__}/..")
   end
 end

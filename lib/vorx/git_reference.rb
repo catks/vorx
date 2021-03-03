@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Vorx
   class GitReference
     GIT_URI_REGEXP = Regexp.new('(\w+://)(.+@)*([\w\d\.]+)(:[\d]+){0,1}/*(.*)')
@@ -6,25 +8,36 @@ module Vorx
       'gitlab' => 'https://gitlab.com',
       'bitbucket' => 'https://bitbucket.org',
       nil => 'https://github.com'
-    }
+    }.freeze
 
-    def self.resolve(git_reference)
-      git_uri = git_reference if GIT_URI_REGEXP.match?(git_reference)
-      provider, reference, version = /([[:alnum:]]+:)?([[[:alnum:]]|\/]+)(:\S+)?/.match(git_reference).captures unless git_uri
+    class << self
+      def resolve(git_reference)
+        git_uri = git_reference if GIT_URI_REGEXP.match?(git_reference)
 
-      provider&.tr!(':', '')
-      version&.tr!(':', '')
+        provider, reference, version = extract_params(git_reference) unless git_uri
 
-      # TODO: Improve
-      raise 'Invalid git uri or git reference' if !reference && !git_uri
+        # TODO: Improve
+        raise 'Invalid git uri or git reference' if !reference && !git_uri
 
-      git_uri ||= "#{PROVIDERS[provider]}/#{reference}.git"
-      version ||= 'master'
+        git_uri ||= "#{PROVIDERS[provider]}/#{reference}.git"
+        version ||= 'master'
 
-      GitRepository.new(
-        git: git_uri,
-        version: version
-      )
+        GitRepository.new(
+          git: git_uri,
+          version: version
+        )
+      end
+
+      private
+
+      def extract_params(git_reference)
+        provider, reference, version = %r{([[:alnum:]]+:)?([[[:alnum:]]|/]+)(:\S+)?}.match(git_reference).captures
+
+        provider&.tr!(':', '')
+        version&.tr!(':', '')
+
+        [provider, reference, version]
+      end
     end
   end
 end

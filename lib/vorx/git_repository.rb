@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module Vorx
   class GitRepository < Dry::Struct
-
     attribute :git, Types::String
-    attribute :version, Types::String.default('master'.freeze)
+    attribute :version, Types::String.default('master')
     attribute :cloned, Types::Bool.optional.default(nil)
 
     include Dry::Equalizer(:git, :version)

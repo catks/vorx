@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Vorx::GitReference do
   def self.gr(**params)
     Vorx::GitRepository.new(**params)
