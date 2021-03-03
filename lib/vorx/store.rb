@@ -4,7 +4,7 @@ require 'yaml/store'
 
 module Vorx
   class Store
-    def initialize(base_path = '~/.vorx/storage', stderr: $stderr, store_file: 'vorx_store.yml')
+    def initialize(base_path = '~/.vorx/store', stderr: $stderr, store_file: 'vorx_store.yml')
       @base_path = Pathname.new(base_path.to_s)
       @stderr = stderr
 
@@ -12,14 +12,6 @@ module Vorx
 
       @store = YAML::Store.new(@base_path.join(store_file).to_s)
       @store.transaction { @store[:repositories] ||= Set.new }
-    end
-
-    def add(git_reference)
-      git_repository = resolve_git_reference(git_reference)
-
-      @store.transaction { @store[:repositories] << git_repository }
-
-      git_repository
     end
 
     def fetch(git_reference)
@@ -30,16 +22,26 @@ module Vorx
       update_repository(git_repository, cloned: true)
     end
 
+    def fetch_all
+      all.each do |repo|
+        fetch(repo)
+      end
+    end
+
+    def add(git_reference)
+      git_repository = resolve_git_reference(git_reference)
+
+      @store.transaction { @store[:repositories] << git_repository }
+
+      git_repository
+    end
+
     def find(git_reference)
       git_repository = resolve_git_reference(git_reference)
 
       git_repositories.detect do |gr|
         gr == git_repository
       end
-    end
-
-    def all
-      @store.transaction { @store[:repositories] }
     end
 
     def delete(git_reference)
@@ -54,6 +56,10 @@ module Vorx
       all.each do |repo|
         delete(repo)
       end
+    end
+
+    def all
+      @store.transaction { @store[:repositories] }
     end
 
     def reload

@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'vorx'
 require 'byebug'
 require_relative 'support/test_remote_repository'
+
+require 'simplecov'
+SimpleCov.start
+
+require 'vorx'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

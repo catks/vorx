@@ -62,6 +62,33 @@ RSpec.describe Vorx::Store do
     end
   end
 
+  describe '#fetch_all' do
+    subject(:fetch_all) { instance.fetch_all }
+    before { allow(instance).to receive(:fetch).and_call_original }
+
+    context 'without repositories' do
+      it 'do not fetch any repository' do
+        fetch_all
+
+        expect(instance).to_not have_received(:fetch)
+      end
+    end
+
+    context 'withs repositories added' do
+      before do
+        instance.add(git_reference)
+        instance.add(git_reference2)
+      end
+      it 'do not fetch any repository' do
+        fetch_all
+
+        expect(instance).to have_received(:fetch).with(Vorx::GitReference.resolve(git_reference))
+        expect(instance).to have_received(:fetch).with(Vorx::GitReference.resolve(git_reference2))
+        expect(instance).to have_received(:fetch).twice
+      end
+    end
+  end
+
   describe '#delete' do
     def delete
       instance.delete(git_reference)

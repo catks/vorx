@@ -22,7 +22,34 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+  require 'vorx'
+
+  store = Vorx::Store.new
+
+  store.fetch('catks/docker-ruby') # Git clone or git fetch and pull https://github.com/catks/docker-ruby on master branch
+
+  store.fetch('catks/docker-ruby:1.0.0') # Git clone or git fetch and pull https://github.com/catks/docker-ruby on 1.0.0
+
+  store.fetch('github:catks/docker-ruby:1.0.0') # Git clone or git fetch and pull https://github.com/catks/docker-ruby on version 1.0.0
+
+  store.fetch('bitbucket:catks/docker-ruby') # Git clone or git fetch and pull https://bitbucket.org/catks/docker-ruby on master branch
+
+  store.fetch('gitlab:catks/docker-ruby') # Git clone or git fetch and pull https://gitlab.com/catks/docker-ruby on master branch
+
+  # You can customize the folder to clone the repositories (default to ~/vorx/store) and the store file (default to vorx_store.yml)
+
+  store = Vorx::Store.new('~/my_repos', store_file: 'my_store.yml')
+
+  store.add('catks/docker-ruby') # Adds git repository reference but not clone
+  store.add('catks/docker-go') # Adds git repository reference but not clone
+
+  store.fetch_all # Clone ou Update every repository
+
+  store.delete('catks/docker-ruby') # Delete git repository reference and folder if cloned
+
+  store.delete_all # Deletes all git repositories references and folders
+```
 
 ## Development
 
