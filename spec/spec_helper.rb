@@ -1,6 +1,7 @@
 require 'bundler/setup'
 require 'vorx'
 require 'byebug'
+require_relative 'support/test_remote_repository.rb'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

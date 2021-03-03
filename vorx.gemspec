@@ -32,5 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-struct', '~> 1.3.0'
   spec.add_dependency 'git', '~> 1.8.1'
 
+  spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'byebug'
 end

@@ -11,12 +11,20 @@ module Vorx
       GitReference.resolve(git_reference)
     end
 
+    def folder_name
+      @folder_name ||= "#{git.split('/').last.chomp('.git')}@#{version}"
+    end
+
     def cloned?
-      cloned
+      !!cloned
     end
 
     def to_s
       "git: #{git} version: #{version}"
+    end
+
+    def update(**params)
+      self.class.new(to_h.merge(**params))
     end
   end
 end

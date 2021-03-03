@@ -1,0 +1,15 @@
+Style/Documentation:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Exclude:
+    - spec/**/*
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+    - djin.gemspec
+
+Style/RescueModifier:
+  Exclude:
+    - spec/**/*
