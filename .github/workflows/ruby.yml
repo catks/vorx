@@ -1,0 +1,50 @@
+name: Ruby
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        ruby: [ '2.5', '2.6', '2.7' ]
+    name: Ruby ${{ matrix.ruby }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Code Climate test-reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+
+      - name: Build
+        run: |
+          docker-compose -p vorx_ruby_${{ matrix.ruby }} build --build-arg ${{ matrix.ruby }} app
+
+      - name: Run tests
+        run: |
+          docker-compose -p vorx_ruby_${{ matrix.ruby }} run --rm app rspec
+        env:
+          TMP_TEST_FILE_FOLDER: '/tmp'
+
+      - name: Publish code coverage
+        run: |
+          # TODO: Move to script
+          docker-compose -p vorx_ruby_${{ matrix.ruby }} run --rm app 'export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}" && ./cc-test-reporter after-build -r ${{secrets.CC_TEST_REPORTER_ID}}'
+
+  lint:
+    runs-on: ubuntu-16.04
+    name: Lint
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+      - name: Install Gems
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+      - name: Rubocop
+        run: bundle exec rubocop
+

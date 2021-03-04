@@ -1,0 +1,38 @@
+verto_version '0.10.0'
+
+config {
+  version.prefix = 'v' # Adds a version_prefix
+  git.pull_before_tag_creation = true
+  git.push_after_tag_creation = true
+}
+
+context(branch('master')) {
+  before_command_tag_up {
+    command_options.add(filter: 'release_only')
+  }
+
+  before_tag_creation {
+    update_changelog(with: :merged_pull_requests_with_bracketed_labels,
+                     confirmation: true,
+                     filename: 'CHANGELOG.md')
+
+    git!('add CHANGELOG.md')
+
+    files_to_change_version_once = %w[lib/vorx/version.rb]
+
+    files_to_change_version_once.each do |filename|
+      file(filename).replace(latest_version.to_s, new_version.to_s)
+    end
+
+    file('README.md').replace_all(latest_version.to_s, new_version.to_s)
+
+    git!("add #{files_to_change_version_once.join(' ')} README.md")
+
+    sh!('bundle install')
+    sh!('rake install')
+    git!('add Gemfile.lock')
+
+    git!('commit -m "Bumps Version"')
+  }
+}
+
