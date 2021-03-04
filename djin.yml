@@ -1,0 +1,46 @@
+djin_version: '0.11.6'
+
+_default_run_options: &default_run_options
+  options: "--rm --entrypoint=''"
+
+tasks:
+  test:
+    description: Runs Specs
+    docker-compose:
+      service: app
+      run:
+        commands: "rspec {{args}}"
+        <<: *default_run_options
+    aliases:
+      - rspec
+
+  lint:
+    description: Lint
+    docker-compose:
+      service: app
+      run:
+        commands: "rubocop {{args}}"
+        <<: *default_run_options
+    aliases:
+      - rubocop
+
+  sh:
+    description: Enter app service shell
+    docker-compose:
+      service: app
+      run:
+        commands: "sh"
+        <<: *default_run_options
+  run:
+    docker-compose:
+      service: app
+      run:
+        commands: "sh -c '{{args}}'"
+        <<: *default_run_options
+
+  release:
+    local:
+      run:
+        - (source ~/.zshrc || true)
+        - verto tag up {{args}}
+        - bundle exec rake release
