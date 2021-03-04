@@ -9,6 +9,38 @@ RSpec.describe Vorx::Store do
   let(:git_reference) { 'http://gitserver/myrepo.git' }
   let(:git_reference2) { 'http://gitserver/myrepo2.git' }
 
+  describe '#add' do
+    def add
+      instance.add(git_reference)
+    end
+
+    context 'when passing a gitreference' do
+      let(:git_reference) { 'gitlab:catks/myrepo' }
+
+      it 'adds a repo with prefix' do
+        add
+
+        git_repository = instance.find(git_reference)
+
+        expect(git_repository.git).to eq('https://gitlab.com/catks/myrepo.git')
+      end
+    end
+
+    context 'when store has a prefix for repositories' do
+      let(:instance) { described_class.new(store_folder.to_s, repository_prefix: prefix) }
+      let(:prefix) { 'vorx-' }
+      let(:git_reference) { 'catks/myrepo' }
+
+      it 'adds a repo with prefix' do
+        add
+
+        git_repository = instance.find(git_reference)
+
+        expect(git_repository.git).to eq('https://github.com/catks/vorx-myrepo.git')
+      end
+    end
+  end
+
   describe '#fetch' do
     def fetch
       instance.fetch(git_reference)

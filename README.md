@@ -37,9 +37,10 @@ Or install it yourself as:
 
   store.fetch('gitlab:catks/docker-ruby') # Git clone or git fetch and pull https://gitlab.com/catks/docker-ruby on master branch
 
-  # You can customize the folder to clone the repositories (default to ~/vorx/store) and the store file (default to vorx_store.yml)
+  # You can customize the folder to clone the repositories (default to ~/vorx/store), the store file (default to vorx_store.yml) and the stderr
 
-  store = Vorx::Store.new('~/my_repos', store_file: 'my_store.yml')
+  stderr_output = StringIO.new
+  store = Vorx::Store.new('~/my_repos', store_file: 'my_store.yml', stderr: stderr_output)
 
   store.add('catks/docker-ruby') # Adds git repository reference but not clone
   store.add('catks/docker-go') # Adds git repository reference but not clone
@@ -49,6 +50,13 @@ Or install it yourself as:
   store.delete('catks/docker-ruby') # Delete git repository reference and folder if cloned
 
   store.delete_all # Deletes all git repositories references and folders
+
+  # Repository Prefix
+
+  store = Vorx::Store.new(repository_prefix: 'vorx-')
+
+  store.fetch('catks/docker-ruby') # Git clone or git fetch and pull https://github.com/catks/vorx-docker-ruby on master branch
+
 ```
 
 ## Development

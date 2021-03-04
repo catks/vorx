@@ -11,7 +11,7 @@ module Vorx
     }.freeze
 
     class << self
-      def resolve(git_reference)
+      def resolve(git_reference, prefix: '')
         git_uri = git_reference if GIT_URI_REGEXP.match?(git_reference)
 
         provider, reference, version = extract_params(git_reference) unless git_uri
@@ -19,7 +19,7 @@ module Vorx
         # TODO: Improve
         raise 'Invalid git uri or git reference' if !reference && !git_uri
 
-        git_uri ||= "#{PROVIDERS[provider]}/#{reference}.git"
+        git_uri ||= "#{PROVIDERS[provider]}/#{with_prefix(reference, prefix)}.git"
         version ||= 'master'
 
         GitRepository.new(
@@ -37,6 +37,12 @@ module Vorx
         version&.tr!(':', '')
 
         [provider, reference, version]
+      end
+
+      def with_prefix(reference, prefix)
+        git_user, git_repo = reference.split('/')
+
+        "#{git_user}/#{prefix}#{git_repo}"
       end
     end
   end

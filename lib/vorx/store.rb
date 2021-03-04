@@ -4,9 +4,10 @@ require 'yaml/store'
 
 module Vorx
   class Store
-    def initialize(base_path = '~/.vorx/store', stderr: $stderr, store_file: 'vorx_store.yml')
+    def initialize(base_path = '~/.vorx/store', stderr: $stderr, store_file: 'vorx_store.yml', repository_prefix: '')
       @base_path = Pathname.new(base_path.to_s)
       @stderr = stderr
+      @repository_prefix = repository_prefix
 
       @base_path.mkpath
 
@@ -78,7 +79,7 @@ module Vorx
     def resolve_git_reference(git_reference)
       return git_reference if git_reference.is_a?(GitRepository)
 
-      GitReference.resolve(git_reference)
+      GitReference.resolve(git_reference, prefix: @repository_prefix)
     end
 
     def update_repository(git_repository, **params)
