@@ -2,7 +2,9 @@
 
 module Vorx
   class GitReference
-    GIT_URI_REGEXP = Regexp.new('(\w+://)(.+@)*([\w\d\.]+)(:[\d]+){0,1}/*(.*)')
+    GIT_URI_REGEXP = %r{(\w+://)(.+@)*([\w\d.]+)(:\d+){0,1}/*(.*)}.freeze
+    GIT_REFERENCE_REGEXP = %r{([[:alnum:]]+:)?([[[:alnum:]]/_-]+)(:\S+)?}.freeze
+
     PROVIDERS = {
       'github' => 'https://github.com',
       'gitlab' => 'https://gitlab.com',
@@ -31,7 +33,7 @@ module Vorx
       private
 
       def extract_params(git_reference)
-        provider, reference, version = %r{([[:alnum:]]+:)?([[[:alnum:]]|/]+)(:\S+)?}.match(git_reference).captures
+        provider, reference, version = GIT_REFERENCE_REGEXP.match(git_reference).captures
 
         provider&.tr!(':', '')
         version&.tr!(':', '')
