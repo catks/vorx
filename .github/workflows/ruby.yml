@@ -4,15 +4,16 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: [ '2.5', '2.6', '2.7' ]
+        ruby: [ '2.5', '2.6', '2.7', '3.0', '3.1' ]
     name: Ruby ${{ matrix.ruby }}
     steps:
       - uses: actions/checkout@v2
 
       - name: Setup Code Climate test-reporter
+        if: ${{ matrix.ruby == '2.7' }}
         run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
@@ -29,18 +30,19 @@ jobs:
           TMP_TEST_FILE_FOLDER: '/tmp'
 
       - name: Publish code coverage
+        if: ${{ matrix.ruby == '2.7' }}
         run: |
           # TODO: Move to script
           docker-compose -p vorx_ruby_${{ matrix.ruby }} run --rm app 'export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}" && ./cc-test-reporter after-build -r ${{secrets.CC_TEST_REPORTER_ID}}'
 
   lint:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     name: Lint
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.6'
+          ruby-version: '2.7'
       - name: Install Gems
         run: |
           gem install bundler
